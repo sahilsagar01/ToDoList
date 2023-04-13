@@ -1,35 +1,92 @@
 const express = require("express");
 const bodyparser = require("body-parser");
+const mongoose = require("mongoose");
 const date = require(__dirname + "/date.js")
 
 
 const app = express();
-const  items = ["Buy Food", "Cock Food", "Eat Food"];
-const workItems = [];
+
+
+
 app.set('view engine', 'ejs');
+
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
+mongoose.connect("mongodb://localhost:27017/todolistDB");
+
+const itemSchima = {
+    name: String
+};
+
+const Item = mongoose.model("Item" , itemSchima)
+
+const Item1 = new Item({
+    name: "Welcome to your todolist!"
+});
+
+const Item2 = new Item({
+    name: "Hit the + button to add a new item."
+});
+
+const Item3 = new Item({
+    name: "<---- Hit this to delete an item."
+});
+
+const inItems = [Item1 , Item2 , Item3];
+
 app.get("/" , function(req , res){
+
+    
+
+    Item.find({})
+    .then(function(founditems) {
+
+        if(founditems.length === 0) {
+            Item.insertMany(inItems)
+             .then(function() {
+              console.log("successfully created.")
+            })
+            .catch(function(err) {
+            console.error(err)
+            });
+            res.redirect("/");
+           }else {
+            res.render("list", {listTitle: day, newItems: founditems});
+           }
+           })
+          .catch(function(err){
+             console.log(err);
+          });
 
     const day = date.getDate();
 
-   
-   
-        res.render("list", {listTitle: day, newItems: items});
 });
 
 app.post("/" , function(req , res ) {
 
-    const item = req.body.newitem;
+    const newItem = req.body.newitem;
 
-    if(req.body.list === "workList") {
-        workItems.push(item);
-        res.redirect("/work");
-    } else {
-        items.push(item);
-        res.redirect("/");
-    }
+    const item = new Item({
+        name: newItem
+    });
+
+    item.save();
+
+
+    res.redirect("/");
+
+
+
+
+
+    // if(req.body.list === "workList") {
+    //     workItems.push(item);
+    //     res.redirect("/work");
+    // } else {
+    //     items.push(item);
+    //     res.redirect("/");
+    // }
    
 });
 

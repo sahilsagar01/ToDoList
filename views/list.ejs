@@ -5,13 +5,18 @@
     </div>
     
     <div class="box">
-           <% for (var i= 0; i< newItems.length; i++) { %>
+
+
+     <%   newItems.forEach(function(item){  %>
             <div class="item">
                 <input type="checkbox">
-                <p><%= newItems[i] %></p>
+                <p><%= item.name %></p>
             </div>
+      <%  }); %>
+           <!-- <% for (var i= 0; i< newItems.length; i++) { %>
+           
                
-            <% } %>
+            <% } %> -->
             
     <form action="/" method="post">
         <input type="text" name="newitem" placeholder="New Item" autocomplete="off">
